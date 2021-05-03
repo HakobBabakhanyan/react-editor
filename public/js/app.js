@@ -2151,29 +2151,22 @@ var LeftBar_1 = __importDefault(__webpack_require__(/*! ./LeftBar */ "./resource
 
 function Editor() {
   var editorEl = react_1.useRef(null);
-  var contentEditable = react_1.useRef(null);
 
   var _a = react_1.useState(),
-      html = _a[0],
-      setHtml = _a[1];
+      editorIframeWindow = _a[0],
+      setEditorIframeWindow = _a[1];
 
-  var _b = react_1.useState(),
-      editorIframeWindow = _b[0],
-      setEditorIframeWindow = _b[1];
-
-  var _c = react_1.useState({
-    fontSize: '16px'
+  var _b = react_1.useState({
+    fontSize: 16
   }),
-      editorElStyle = _c[0],
-      setEditorElStyle = _c[1];
+      editorElStyle = _b[0],
+      setEditorElStyle = _b[1];
 
   react_1.useEffect(function () {
-    // document
     if (editorIframeWindow) createDiv(editorIframeWindow);
   }, [editorIframeWindow]);
   react_1.useEffect(function () {
-    var _a; // document
-
+    var _a;
 
     setEditorIframeWindow((_a = editorEl === null || editorEl === void 0 ? void 0 : editorEl.current) === null || _a === void 0 ? void 0 : _a.contentWindow);
     console.log(editorElStyle.fontSize);
@@ -2184,37 +2177,34 @@ function Editor() {
     div.style.width = '100%';
     div.style.height = '100%';
     div.setAttribute('contenteditable', 'true');
-    div.addEventListener('beforeinput', function (e) {// let element = editorIframeWindow.document.getSelection()?.getRangeAt(0).startContainer;
-      //
-      // if(!element?.textContent && (element?.childNodes.length === 1)  ){
-      //     element?.appendChild(editorIframeWindow.document.createTextNode(e.data??''))
-      //     element?.childNodes[1].remove()
-      //     e.preventDefault()
-      // }
-      // @ts-ignore
-      // // @ts-ignore
-      // console.log(element?.hasChildNodes('br'),document.createElement('br') )
-      // console.log(element?.childNodes[0] == document.createElement('br') )
-    });
-    div.addEventListener('click', function (e) {
-      if ((e === null || e === void 0 ? void 0 : e.target).style.fontSize) console.log((e === null || e === void 0 ? void 0 : e.target).style.fontSize);
-      setEditorElStyle({
-        fontSize: (e === null || e === void 0 ? void 0 : e.target).style.fontSize
-      });
-    }); //     div.addEventListener('gotpointercapture', (e) => {
-    //     e.preventDefault()
-    //     console.log(e)
-    // })
+    div.addEventListener('input', function (e) {
+      var _a, _b;
 
+      var sel = editorIframeWindow.document.getSelection(),
+          span = document.createElement('span');
+      var parent = editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.querySelector('font[size="7"]');
+
+      if (parent && !(sel === null || sel === void 0 ? void 0 : sel.toString())) {
+        span.innerHTML = (_a = parent === null || parent === void 0 ? void 0 : parent.innerHTML) !== null && _a !== void 0 ? _a : '';
+        span.setAttribute('style', "font-size: " + editorElStyle.fontSize + "px");
+        (_b = parent === null || parent === void 0 ? void 0 : parent.parentNode) === null || _b === void 0 ? void 0 : _b.replaceChild(span, parent);
+        var range = editorIframeWindow.document.createRange();
+        console.log(span);
+        range.setStart(span.childNodes[0], 1);
+        range.setEnd(span.childNodes[0], 1);
+        sel === null || sel === void 0 ? void 0 : sel.removeAllRanges();
+        sel === null || sel === void 0 ? void 0 : sel.addRange(range);
+      }
+    });
     editorIframeWindow.document.body.append(div);
   };
 
-  var setAttribute = function setAttribute() {
-    alert(2);
+  var _setFontFamily = function setFontFamily(value) {
+    editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('fontName', false, 'Arial');
   };
 
   var setFontSize = function setFontSize(value) {
-    var _a, _b, _c, _d, _e, _f;
+    var _a, _b, _c, _d;
 
     if (editorIframeWindow) {
       var sel = editorIframeWindow.document.getSelection(),
@@ -2224,94 +2214,48 @@ function Editor() {
         editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('fontSize', false, '7');
         var parent_1 = editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.querySelector('font[size="7"]');
         span.innerHTML = (_a = parent_1 === null || parent_1 === void 0 ? void 0 : parent_1.innerHTML) !== null && _a !== void 0 ? _a : '';
+        span.setAttribute('style', "font-size: " + value + "px");
         (_b = parent_1 === null || parent_1 === void 0 ? void 0 : parent_1.parentNode) === null || _b === void 0 ? void 0 : _b.replaceChild(span, parent_1);
         var children = Array.from((_c = span === null || span === void 0 ? void 0 : span.querySelectorAll('*')) !== null && _c !== void 0 ? _c : []);
         children.forEach(function (item) {
           item === null || item === void 0 ? void 0 : item.setAttribute('style', "font-size: inherit");
         });
         (_d = editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.getSelection()) === null || _d === void 0 ? void 0 : _d.selectAllChildren(span);
+      } else {
+        editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('fontSize', false, '7');
       }
 
-      span === null || span === void 0 ? void 0 : span.setAttribute('style', "font-size: " + value + "px");
-      (_f = (_e = window === null || window === void 0 ? void 0 : window.document) === null || _e === void 0 ? void 0 : _e.getSelection()) === null || _f === void 0 ? void 0 : _f.setPosition(editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document); // editorIframeWindow?.document.getSelection()?.selectAllChildren(span)
-      // // if( (element?.childNodes.length === 1)  &&
-      // //     element?.childNodes[0]?.nodeName === 'BR'
-      // // ){
-      // //     element?.childNodes[0]?.parentElement?.setAttribute('style', `font-size: ${value}px`);
-      // //     return true;
-      // // }
-      //
-      // let parent = element?.parentElement
-      //
-      // let  children = Array.from( parent?.querySelectorAll('*') ?? [] );
-      //
-      //
-      // parent?.setAttribute('style', `font-size: ${value}px`)
-      //
-      // let range = sel?.getRangeAt(0);
-      // range?.deleteContents();
-      //
-      // if(element)
-      //     console.log(range?.selectNode(element))
-      //
-      // span.setAttribute('style', `font-size: ${value}px`)
-      // // if(text){
-      // //     span.appendChild(document.createTextNode(text ))
-      // // }else {
-      // //     span.appendChild(document.createTextNode( ' '))
-      // //
-      // //     editorIframeWindow.document.getSelection()?.setPosition(span,0);
-      // // }
-      // if(text){
-      //     span.append(document.createTextNode( text??'' ))
-      // }else {
-      //
-      //     console.log(element?.nodeName)
-      //     // if(!element?.textContent && (element?.childNodes.length === 1)  ){
-      //     //     element?.appendChild(editorIframeWindow.document.createTextNode(e.data??''))
-      //     //     element?.childNodes[1].remove()
-      //     //     // e.preventDefault()
-      //     // }
-      //     span.append(document.createElement( 'br' ))
-      // }
-      //
-      // let range = sel?.getRangeAt(0);
-      // range?.deleteContents();
-      // range?.insertNode(span);
-      //
-      // if(!text){
-      //     editorIframeWindow.document.getSelection()?.setPosition(span,1)
-      // }
-      // editorIframeWindow.document.getSelection()?.collapse(span,0);
-      // editorIframeWindow?.document.execCommand('fontSize', false, '7');
+      editorElStyle.fontSize = parseInt(value);
     }
   };
 
   var _onChangeFontStyle = function onChangeFontStyle(value) {
-    // console.log(  editorIframeWindow?.document.getSelection()?.getRangeAt(0).toString()?.replace('a','b'))
-    //   if(editorIframeWindow){
-    //       let span = editorIframeWindow.document.createElement('span'),
-    //           // sel = editorIframeWindow?.document.getSelection(),
-    //           // selectedText = editorIframeWindow?.document.getSelection()?.toString();
-    // span.append(document.createTextNode(selectedText ?? ''))
-    // let range = sel?.getRangeAt(0);
-    // range?.deleteContents();
-    // range?.insertNode(span);
-    //       // console.log( p, editorIframeWindow?.document.getSelection()?.setPosition(p,1))
-    //   }
-    if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('bold')) {
-      editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('bold');
-    }
+    if (value === 'none') {
+      if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('bold')) {
+        editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('bold');
+      }
 
-    if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('italic')) {
-      editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('italic');
-    }
+      if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('italic')) {
+        editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('italic');
+      }
 
-    if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('underline')) {
-      editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('underline');
-    }
+      if (editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.queryCommandState('underline')) {
+        editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('underline');
+      }
+    } else editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand(value);
+  };
 
-    editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand(value);
+  var _onChangeFontColor = function onChangeFontColor(value) {
+    var _a, _b, _c;
+
+    editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.execCommand('foreColor', false, value); // with rgba
+
+    var span = document.createElement('span');
+    var parent = editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.querySelector("font[color=\"" + value + "\"]");
+    span.innerHTML = (_a = parent === null || parent === void 0 ? void 0 : parent.innerHTML) !== null && _a !== void 0 ? _a : '';
+    span.setAttribute('style', "color: " + value);
+    (_b = parent === null || parent === void 0 ? void 0 : parent.parentNode) === null || _b === void 0 ? void 0 : _b.replaceChild(span, parent);
+    (_c = editorIframeWindow === null || editorIframeWindow === void 0 ? void 0 : editorIframeWindow.document.getSelection()) === null || _c === void 0 ? void 0 : _c.selectAllChildren(span);
   };
 
   return react_1["default"].createElement("div", {
@@ -2321,26 +2265,108 @@ function Editor() {
   }, react_1["default"].createElement("iframe", {
     ref: editorEl,
     className: "w-1/2 bg-white rounded-md"
-  }), html), react_1["default"].createElement("div", {
+  })), react_1["default"].createElement("div", {
     className: "w-1/4"
   }, react_1["default"].createElement(LeftBar_1["default"], {
     setFontFamily: function setFontFamily(value) {
-      return setAttribute;
+      return _setFontFamily(value);
     },
     onChangeFontStyle: function onChangeFontStyle(value) {
       return _onChangeFontStyle(value);
     },
     onChangeFontSize: function onChangeFontSize(value) {
       return setFontSize(value);
+    },
+    onChangeFontColor: function onChangeFontColor(value) {
+      return _onChangeFontColor(value);
     }
-  }), react_1["default"].createElement("button", {
-    onClick: function onClick(value) {
-      return setAttribute();
-    }
-  }, "save")));
+  }), react_1["default"].createElement("button", null, "save")));
 }
 
 exports.default = Editor;
+
+/***/ }),
+
+/***/ "./resources/js/components/FontColor.tsx":
+/*!***********************************************!*\
+  !*** ./resources/js/components/FontColor.tsx ***!
+  \***********************************************/
+/***/ (function(__unused_webpack_module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var __createBinding = this && this.__createBinding || (Object.create ? function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  Object.defineProperty(o, k2, {
+    enumerable: true,
+    get: function get() {
+      return m[k];
+    }
+  });
+} : function (o, m, k, k2) {
+  if (k2 === undefined) k2 = k;
+  o[k2] = m[k];
+});
+
+var __setModuleDefault = this && this.__setModuleDefault || (Object.create ? function (o, v) {
+  Object.defineProperty(o, "default", {
+    enumerable: true,
+    value: v
+  });
+} : function (o, v) {
+  o["default"] = v;
+});
+
+var __importStar = this && this.__importStar || function (mod) {
+  if (mod && mod.__esModule) return mod;
+  var result = {};
+  if (mod != null) for (var k in mod) {
+    if (k !== "default" && Object.prototype.hasOwnProperty.call(mod, k)) __createBinding(result, mod, k);
+  }
+
+  __setModuleDefault(result, mod);
+
+  return result;
+};
+
+Object.defineProperty(exports, "__esModule", ({
+  value: true
+}));
+
+var react_1 = __importStar(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
+
+var FontColor = function FontColor(props) {
+  var _a = react_1.useState('#ffffff'),
+      color = _a[0],
+      setColor = _a[1];
+
+  var changeColor = function changeColor(value) {
+    setColor(value);
+    props.onChange(value);
+  };
+
+  return react_1["default"].createElement("div", {
+    className: "flex-auto flex flex-col items-center "
+  }, react_1["default"].createElement("div", {
+    className: "w-full border-2 border-inputBorder rounded-md"
+  }, react_1["default"].createElement("div", {
+    className: "w-full flex items-center bg-white p-1 flex border border-gray-200 rounded svelte-1l8159u"
+  }, react_1["default"].createElement("input", {
+    id: "color",
+    onChange: function onChange(e) {
+      return changeColor(e.target.value);
+    },
+    value: color,
+    className: "bg-transparent border-0 rounded-full w-5 h-5",
+    type: "color"
+  }), react_1["default"].createElement("label", {
+    htmlFor: "color",
+    className: "w-full ml-2 text-gray-900"
+  }, color))));
+};
+
+exports.default = FontColor;
 
 /***/ }),
 
@@ -2368,8 +2394,11 @@ var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/r
 var react_select_1 = __importDefault(__webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js"));
 
 var options = [{
-  value: 'roboto',
-  label: 'Roboto'
+  value: 'Arial',
+  label: 'Arial'
+}, {
+  value: 'Calibri',
+  label: 'Calibri'
 }];
 
 var FontFamilySelect = function FontFamilySelect(props) {
@@ -2474,7 +2503,7 @@ var fontSizes = [{
 }];
 var fontInputIconStyle = {
   position: 'absolute',
-  left: 190,
+  left: 10,
   top: 12
 };
 
@@ -2488,7 +2517,9 @@ var FontStyle = function FontStyle(props) {
     styles: customStyles,
     className: "w-2/3 rounded-r-none",
     options: fontSizes
-  }), react_1["default"].createElement("span", {
+  }), react_1["default"].createElement("div", {
+    className: "relative w-1/3"
+  }, react_1["default"].createElement("span", {
     style: fontInputIconStyle
   }, react_1["default"].createElement("svg", {
     width: "16",
@@ -2512,8 +2543,8 @@ var FontStyle = function FontStyle(props) {
     style: {
       paddingLeft: 30
     },
-    className: "w-1/3 border-2 h-full border-inputBorder outline-none rounded-r-md"
-  }));
+    className: "w-full border-2 h-full border-inputBorder outline-none rounded-r-md"
+  })));
 };
 
 exports.default = FontStyle;
@@ -2541,8 +2572,6 @@ Object.defineProperty(exports, "__esModule", ({
 
 var react_1 = __importDefault(__webpack_require__(/*! react */ "./node_modules/react/index.js"));
 
-var react_select_1 = __importDefault(__webpack_require__(/*! react-select */ "./node_modules/react-select/dist/react-select.esm.js"));
-
 var Spacing_1 = __importDefault(__webpack_require__(/*! ./Spacing */ "./resources/js/components/Spacing.tsx"));
 
 var TextAlign_1 = __importDefault(__webpack_require__(/*! ./TextAlign */ "./resources/js/components/TextAlign.tsx"));
@@ -2551,16 +2580,8 @@ var FontFamilySelect_1 = __importDefault(__webpack_require__(/*! ./FontFamilySel
 
 var FontStyle_1 = __importDefault(__webpack_require__(/*! ./FontStyle */ "./resources/js/components/FontStyle.tsx"));
 
-var options = [{
-  value: 'chocolate',
-  label: 'Chocolate'
-}, {
-  value: 'strawberry',
-  label: 'Strawberry'
-}, {
-  value: 'vanilla',
-  label: 'Vanilla'
-}];
+var FontColor_1 = __importDefault(__webpack_require__(/*! ./FontColor */ "./resources/js/components/FontColor.tsx"));
+
 var titleStyle = {
   color: "#788994",
   fontSize: "11px",
@@ -2591,17 +2612,9 @@ var LeftBar = function LeftBar(props) {
     }
   })), react_1["default"].createElement("div", {
     className: "w-full h-40 mb-10"
-  }, react_1["default"].createElement(react_select_1["default"], {
-    className: "w-full",
-    options: options,
-    styles: {
-      control: function control() {
-        return {
-          border: "2px solid #E8ECF0",
-          display: 'flex',
-          borderRadius: 4
-        };
-      }
+  }, react_1["default"].createElement(FontColor_1["default"], {
+    onChange: function onChange(value) {
+      return props.onChangeFontColor(value);
     }
   })), react_1["default"].createElement("div", {
     className: "w-full h-40 mb-10 flex relative"

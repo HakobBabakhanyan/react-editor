@@ -3,7 +3,8 @@ import Select from "react-select";
 
 
 const options = [
-    {value: 'roboto', label: 'Roboto'},
+    {value: 'Arial', label: 'Arial'},
+    {value: 'Calibri', label: 'Calibri'},
 ]
 
 

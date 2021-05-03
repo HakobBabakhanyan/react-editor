@@ -5,25 +5,20 @@ function Editor() {
 
     const editorEl = useRef<HTMLIFrameElement>(null);
 
-    const contentEditable = useRef(null);
-
-    const [html, setHtml] = useState<string>();
 
     const [editorIframeWindow, setEditorIframeWindow] = useState<Window | null>()
 
     const [editorElStyle, setEditorElStyle] = useState({
-        fontSize: '16px'
+        fontSize: 16
     })
 
     useEffect(() => {
-        // document
         if (editorIframeWindow)
             createDiv(editorIframeWindow);
 
     }, [editorIframeWindow]);
 
     useEffect(() => {
-        // document
         setEditorIframeWindow(editorEl?.current?.contentWindow)
         console.log(editorElStyle.fontSize)
     }, []);
@@ -35,36 +30,36 @@ function Editor() {
         div.style.width = '100%';
         div.style.height = '100%';
         div.setAttribute('contenteditable', 'true');
-        div.addEventListener('beforeinput', (e) => {
-            // let element = editorIframeWindow.document.getSelection()?.getRangeAt(0).startContainer;
+        div.addEventListener('input', (e) => {
 
-            //
-            // if(!element?.textContent && (element?.childNodes.length === 1)  ){
-            //     element?.appendChild(editorIframeWindow.document.createTextNode(e.data??''))
-            //     element?.childNodes[1].remove()
-            //     e.preventDefault()
-            // }
+            const sel = editorIframeWindow.document.getSelection(),
+                span = document.createElement('span');
 
-            // @ts-ignore
-            // // @ts-ignore
-            // console.log(element?.hasChildNodes('br'),document.createElement('br') )
-            // console.log(element?.childNodes[0] == document.createElement('br') )
+            let parent = editorIframeWindow?.document.querySelector('font[size="7"]');
+
+            if (parent && !sel?.toString()) {
+                span.innerHTML = parent?.innerHTML ?? ''
+                span.setAttribute('style', `font-size: ${editorElStyle.fontSize}px`)
+                parent?.parentNode?.replaceChild(span, parent);
+
+                let range = editorIframeWindow.document.createRange();
+
+                console.log(span)
+                range.setStart(span.childNodes[0], 1);
+                range.setEnd(span.childNodes[0], 1);
+                sel?.removeAllRanges();
+                sel?.addRange(range);
+
+            }
         })
-        div.addEventListener('click', (e) => {
-          if((e?.target as HTMLElement).style.fontSize)
-              console.log((e?.target as HTMLElement).style.fontSize)
-            setEditorElStyle({fontSize: (e?.target as HTMLElement).style.fontSize})
-        })
-        //     div.addEventListener('gotpointercapture', (e) => {
-        //     e.preventDefault()
-        //     console.log(e)
-        // })
+
         editorIframeWindow.document.body.append(div)
 
     }
 
-    const setAttribute = () => {
-        alert(2)
+    const setFontFamily = (value: string) => {
+
+        editorIframeWindow?.document.execCommand('fontName', false, 'Arial')
     }
 
 
@@ -72,111 +67,61 @@ function Editor() {
 
         if (editorIframeWindow) {
             const sel = editorIframeWindow.document.getSelection(),
-                 span = document.createElement('span');
+                span = document.createElement('span');
 
-            if(sel?.toString()){
+            if (sel?.toString()) {
 
-                editorIframeWindow?.document.execCommand('fontSize',false, '7')
-                let parent  = editorIframeWindow?.document.querySelector('font[size="7"]');
-                span.innerHTML = parent?.innerHTML??''
+                editorIframeWindow?.document.execCommand('fontSize', false, '7')
+                let parent = editorIframeWindow?.document.querySelector('font[size="7"]');
+                span.innerHTML = parent?.innerHTML ?? ''
+                span.setAttribute('style', `font-size: ${value}px`)
                 parent?.parentNode?.replaceChild(span, parent);
 
-                let  children = Array.from( span?.querySelectorAll('*') ?? [] );
+                let children = Array.from(span?.querySelectorAll('*') ?? []);
 
-                children.forEach( item => {
+                children.forEach(item => {
 
                     item?.setAttribute('style', `font-size: inherit`)
-                } )
+                })
 
                 editorIframeWindow?.document.getSelection()?.selectAllChildren(span)
+            } else {
+
+                editorIframeWindow?.document.execCommand('fontSize', false, '7')
             }
 
-            span?.setAttribute('style', `font-size: ${value}px`);
-
-            window?.document?.getSelection()?.setPosition(editorIframeWindow?.document)
-            // editorIframeWindow?.document.getSelection()?.selectAllChildren(span)
-
-
-            // // if( (element?.childNodes.length === 1)  &&
-            // //     element?.childNodes[0]?.nodeName === 'BR'
-            // // ){
-            // //     element?.childNodes[0]?.parentElement?.setAttribute('style', `font-size: ${value}px`);
-            // //     return true;
-            // // }
-            //
-            // let parent = element?.parentElement
-            //
-            // let  children = Array.from( parent?.querySelectorAll('*') ?? [] );
-            //
-
-            //
-            // parent?.setAttribute('style', `font-size: ${value}px`)
-            //
-
-            // let range = sel?.getRangeAt(0);
-            // range?.deleteContents();
-            //
-            // if(element)
-            //     console.log(range?.selectNode(element))
-            //
-            // span.setAttribute('style', `font-size: ${value}px`)
-            // // if(text){
-            // //     span.appendChild(document.createTextNode(text ))
-            // // }else {
-            // //     span.appendChild(document.createTextNode( ' '))
-            // //
-            // //     editorIframeWindow.document.getSelection()?.setPosition(span,0);
-            // // }
-            // if(text){
-            //     span.append(document.createTextNode( text??'' ))
-            // }else {
-            //
-            //     console.log(element?.nodeName)
-            //     // if(!element?.textContent && (element?.childNodes.length === 1)  ){
-            //     //     element?.appendChild(editorIframeWindow.document.createTextNode(e.data??''))
-            //     //     element?.childNodes[1].remove()
-            //     //     // e.preventDefault()
-            //     // }
-            //     span.append(document.createElement( 'br' ))
-            // }
-            //
-            // let range = sel?.getRangeAt(0);
-            // range?.deleteContents();
-            // range?.insertNode(span);
-            //
-            // if(!text){
-            //     editorIframeWindow.document.getSelection()?.setPosition(span,1)
-            // }
-            // editorIframeWindow.document.getSelection()?.collapse(span,0);
-            // editorIframeWindow?.document.execCommand('fontSize', false, '7');
+            editorElStyle.fontSize = parseInt(value)
         }
     }
 
     const onChangeFontStyle = (value: string) => {
 
-        // console.log(  editorIframeWindow?.document.getSelection()?.getRangeAt(0).toString()?.replace('a','b'))
-        //   if(editorIframeWindow){
-        //       let span = editorIframeWindow.document.createElement('span'),
-        //           // sel = editorIframeWindow?.document.getSelection(),
-        //           // selectedText = editorIframeWindow?.document.getSelection()?.toString();
-        // span.append(document.createTextNode(selectedText ?? ''))
-        // let range = sel?.getRangeAt(0);
-        // range?.deleteContents();
-        // range?.insertNode(span);
-        //       // console.log( p, editorIframeWindow?.document.getSelection()?.setPosition(p,1))
-        //   }
-        if (editorIframeWindow?.document.queryCommandState('bold')) {
-            editorIframeWindow?.document.execCommand('bold')
-        }
-        if (editorIframeWindow?.document.queryCommandState('italic')) {
-            editorIframeWindow?.document.execCommand('italic')
-        }
-        if (editorIframeWindow?.document.queryCommandState('underline')) {
-            editorIframeWindow?.document.execCommand('underline')
-        }
+        if (value === 'none') {
+            if (editorIframeWindow?.document.queryCommandState('bold')) {
+                editorIframeWindow?.document.execCommand('bold')
+            }
+            if (editorIframeWindow?.document.queryCommandState('italic')) {
+                editorIframeWindow?.document.execCommand('italic')
+            }
+            if (editorIframeWindow?.document.queryCommandState('underline')) {
+                editorIframeWindow?.document.execCommand('underline')
+            }
+        } else
+            editorIframeWindow?.document.execCommand(value)
 
-        editorIframeWindow?.document.execCommand(value)
+    }
+    const onChangeFontColor  = (value: string) => {
 
+        editorIframeWindow?.document.execCommand('foreColor', false, value); // with rgba
+
+        let span = document.createElement('span');
+        let parent = editorIframeWindow?.document.querySelector(`font[color="${value}"]`);
+
+        span.innerHTML = parent?.innerHTML ?? ''
+        span.setAttribute('style', `color: ${value}`)
+        parent?.parentNode?.replaceChild(span, parent);
+
+        editorIframeWindow?.document.getSelection()?.selectAllChildren(span)
 
     }
 
@@ -186,53 +131,15 @@ function Editor() {
             <div className="w-3/4 flex justify-center p-5">
                 <iframe ref={editorEl} className="w-1/2 bg-white rounded-md">
                 </iframe>
-                {/*<div ref={editorEl}*/}
-                {/*     onBeforeInput={(e:any) => {*/}
-                {/*         // e.preventDefault();*/}
-                {/*         // if(e.data === '\n'){*/}
-                {/*         //     console.log()*/}
-                {/*         //     setHtml(html + ' <br>  ');*/}
-                {/*         // }else {*/}
-                {/*         //     setHtml(html + e.data);*/}
-                {/*         // }*/}
-                {/*     }*/}
-                {/*     }*/}
-                {/*     onBlur={(e:any) => {*/}
-                {/*         console.log(e)*/}
-
-                {/*         // e.preventDefault();*/}
-                {/*         // if(e.data === '\n'){*/}
-                {/*         //     console.log()*/}
-                {/*         //     setHtml(html + ' <br>  ');*/}
-                {/*         // }else {*/}
-                {/*         //     setHtml(html + e.data);*/}
-                {/*         // }*/}
-                {/*     }}*/}
-                {/*     onBeforeInputCapture={(e:any) => {*/}
-                {/*         // e.preventDefault()*/}
-                {/*         // setHtml(html + e.data)*/}
-                {/*         // console.log(e.data)*/}
-                {/*     }}*/}
-                {/*     onInput={(e:any) => {*/}
-
-
-                {/*         // console.log(e.nativeEvent)*/}
-                {/*         // setHtml(e.target.innerHTML);*/}
-                {/*     }*/}
-                {/*     }*/}
-                {/*     contentEditable={true}*/}
-                {/*     suppressContentEditableWarning={true}*/}
-                {/*     className="w-1/2 bg-white rounded-md">*/}
-                {html}
-                {/*</div>*/}
             </div>
             <div className="w-1/4">
                 <LeftBar
-                    setFontFamily={(value: string) => setAttribute}
+                    setFontFamily={(value: string) => setFontFamily(value)}
                     onChangeFontStyle={(value: any) => onChangeFontStyle(value)}
                     onChangeFontSize={(value: any) => setFontSize(value)}
+                    onChangeFontColor={(value: any) => onChangeFontColor(value)}
                 />
-                <button onClick={(value: any) => setAttribute()}>save</button>
+                <button >save</button>
             </div>
         </div>
     );
